@@ -42,7 +42,7 @@
   background: none;
   color: var(--muted);
   padding: 4px 2px 0;
-  font-weight: 650;
+  font-weight: 600;
 }
 .topbar nav button.active {
   border-color: var(--blue);
@@ -249,12 +249,12 @@
 }
 .card-detail.accent {
   color: var(--blue);
-  font-weight: 750;
+  font-weight: 700;
   margin-top: 2px;
 }
 .auto-tag {
   font-size: 10px;
-  font-weight: 750;
+  font-weight: 700;
   color: #556279;
   background: var(--slate);
   border-radius: 4px;
@@ -699,7 +699,7 @@
   --rdp-day_button-width: 36px;
   --rdp-day_button-height: 36px;
   --rdp-selected-border: 2px solid var(--blue);
-  font-family: Inter, sans-serif;
+  font-family: var(--font-ui);
   font-size: 13px;
 }
 .date-popover .rdp-months {
@@ -842,4 +842,10 @@
   .account {
     margin-left: auto;
   }
+}
+
+.choice-menu,
+.date-popover,
+.date-popover .rdp-root {
+  font-family: var(--font-ui);
 }
