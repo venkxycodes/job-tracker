@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -32,7 +33,9 @@ export function ApplicationsBoard({
   onEdit: (application: Application) => void;
   onStatusChange: (application: Application, status: Status) => void;
 }) {
+  const lastDragAt = useRef(0);
   const onDragEnd = ({ draggableId, source, destination }: DropResult) => {
+    lastDragAt.current = Date.now();
     if (!destination || destination.droppableId === source.droppableId) return;
     const app = applications.find((item) => item.id === draggableId);
     const status = STATUSES.find((item) => item === destination.droppableId);
@@ -42,10 +45,15 @@ export function ApplicationsBoard({
   return (
     <>
       <p className="board-help" id="board-help">
-        Drag a card by its handle into another column. Use Space and arrow keys
-        to move it with a keyboard.
+        Drag a card into another column. Click to edit it. With a keyboard,
+        press Space, use arrow keys, then press Space to drop.
       </p>
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext
+        onDragStart={() => {
+          lastDragAt.current = Number.POSITIVE_INFINITY;
+        }}
+        onDragEnd={onDragEnd}
+      >
         <div
           className="board"
           aria-label="Applications board"
@@ -85,41 +93,32 @@ export function ApplicationsBoard({
                             <article
                               ref={drag.innerRef}
                               {...drag.draggableProps}
+                              {...drag.dragHandleProps}
                               style={drag.draggableProps.style}
+                              aria-label={`${app.role} at ${app.company}, ${status}. Drag to change status or press Enter to edit.`}
+                              title="Drag to move · Click to edit"
+                              onClick={() => {
+                                if (Date.now() - lastDragAt.current > 350)
+                                  onEdit(app);
+                              }}
+                              onKeyDown={(event) => {
+                                if (
+                                  event.key === "Enter" &&
+                                  !dragState.isDragging
+                                ) {
+                                  event.preventDefault();
+                                  onEdit(app);
+                                }
+                              }}
                               className={`application-card${dragState.isDragging ? " application-card-dragging" : ""}`}
                             >
-                              <div className="card-top">
+                              <div className="card-content">
                                 <span
                                   className="company-icon"
                                   aria-hidden="true"
                                 >
                                   {app.company.slice(0, 1).toUpperCase()}
                                 </span>
-                                <span
-                                  className="drag-handle"
-                                  {...drag.dragHandleProps}
-                                  aria-label={`Drag ${app.role} at ${app.company} to another column`}
-                                  title="Drag to change status"
-                                >
-                                  <svg
-                                    aria-hidden="true"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                  >
-                                    <circle cx="6" cy="4" r="1.5" />
-                                    <circle cx="14" cy="4" r="1.5" />
-                                    <circle cx="6" cy="10" r="1.5" />
-                                    <circle cx="14" cy="10" r="1.5" />
-                                    <circle cx="6" cy="16" r="1.5" />
-                                    <circle cx="14" cy="16" r="1.5" />
-                                  </svg>
-                                </span>
-                              </div>
-                              <button
-                                className="card-open"
-                                onClick={() => onEdit(app)}
-                                aria-label={`Edit ${app.role} at ${app.company}`}
-                              >
                                 <strong>{app.company}</strong>
                                 <span className="role">{app.role}</span>
                                 <span className="card-detail">
@@ -147,7 +146,7 @@ export function ApplicationsBoard({
                                       saved
                                     </span>
                                   )}
-                              </button>
+                              </div>
                             </article>
                           )}
                         </Draggable>

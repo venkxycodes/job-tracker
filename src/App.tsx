@@ -38,7 +38,7 @@ function App() {
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState('')
-  const [notice, setNotice] = useState('')
+  const [notice, setNotice] = useState<{ message: string } | null>(null)
   const [today, setToday] = useState(localDate())
 
   useEffect(() => onAuthStateChanged(auth, (next) => { setUser(next); setAuthLoading(false); setError(''); setApplications([]); setLoading(!!next) }, (err) => { setAuthLoading(false); setError(errorText(err)) }), [])
@@ -52,6 +52,11 @@ function App() {
     }, (err) => { setError(`Could not load applications: ${errorText(err)}`); setLoading(false) })
   }, [user, retry])
   useEffect(() => {
+    if (!notice) return
+    const timer = window.setTimeout(() => setNotice(null), 2000)
+    return () => window.clearTimeout(timer)
+  }, [notice])
+  useEffect(() => {
     const refresh = () => setToday(localDate())
     const timer = window.setInterval(refresh, 30_000)
     window.addEventListener('focus', refresh)
@@ -60,8 +65,8 @@ function App() {
 
   const path = (id: string) => doc(db, 'users', user!.uid, 'applications', id)
   const act = async (key: string, action: () => Promise<void>, success: string) => {
-    setBusy(key); setError(''); setNotice('')
-    try { await action(); setNotice(success); return true }
+    setBusy(key); setError(''); setNotice(null)
+    try { await action(); setNotice({ message: success }); return true }
     catch (err) { setError(errorText(err)); return false }
     finally { setBusy(null) }
   }
@@ -107,7 +112,7 @@ function App() {
     <header className="topbar"><div className="brand">track<span>·</span></div><nav aria-label="Primary navigation"><button className={page === 'Applications' ? 'active' : ''} onClick={() => setPage('Applications')}>Applications</button><button className={page === 'Interviews' ? 'active' : ''} onClick={() => setPage('Interviews')}>Interviews <span className="nav-count">{interviewApps.length}</span></button></nav><div className="account"><span title={user.email || ''}>{user.displayName || user.email}</span><button className="text-button" onClick={() => void signOut(auth).catch((err) => setError(errorText(err)))}>Sign out</button></div></header>
     <main className="workspace">
       {error && <div className="error banner" role="alert">{error} <button className="text-button" onClick={() => { setError(''); setLoading(true); setRetry((n) => n + 1) }}>Retry loading</button></div>}
-      {notice && <div className="notice" role="status">{notice}<button aria-label="Dismiss notice" onClick={() => setNotice('')}>×</button></div>}
+      {notice && <div className="toast" role="status" aria-live="polite">{notice.message}<button aria-label="Dismiss notice" onClick={() => setNotice(null)}>×</button></div>}
       <div className="page-title"><div><p className="eyebrow">Your search workspace</p><h1>{page}</h1><p>{page === 'Applications' ? 'See where every opportunity stands.' : 'Stay ready for the next conversation.'}</p></div>{page === 'Applications' ? <button className="primary-button" onClick={startAdd}>+ Add application</button> : <button className="primary-button" onClick={() => setPage('Applications')}>View applications</button>}</div>
       {loading ? <div className="center-state">Loading your applications…</div> : page === 'Applications' ? <>
         {applications.length === 0 && <div className="empty-banner"><strong>Your search starts here.</strong><span>Add an application to see it move across your board.</span><button className="secondary-button" onClick={startAdd}>Add your first application</button></div>}
