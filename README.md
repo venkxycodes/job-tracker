@@ -20,4 +20,4 @@ Run `firebase login`, then `firebase use --add` to associate the repository with
 
 ## Behavior
 
-Applications appear in Applied, Interview, Offer, Rejected, or Ghosted. Changing to Interview creates Round 1 once; interview history remains with the application after an outcome. Applied applications appear in Ghosted after 45 full local calendar days without a response. Moving one back to Applied starts a new 45-day clock. The derived Ghosted state is not written to Firestore.
+Applications appear in Applied, Interview, Offer, Rejected, or Ghosted. Drag a card by its handle to a new column to change its status; keyboard users can focus the handle, press Space, move with arrow keys, and press Space to drop. Status also remains editable in the application details. Changing to Interview creates Round 1 once; interview history remains with the application after an outcome. Applied applications appear in Ghosted after 45 full local calendar days without a response. Moving one back to Applied starts a new 45-day clock. The derived Ghosted state is not written to Firestore.
