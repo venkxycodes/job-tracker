@@ -52,19 +52,17 @@ export function ChoiceSelect({
   options,
   label,
   disabled,
-  compact = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   options: readonly string[];
   label: string;
   disabled?: boolean;
-  compact?: boolean;
 }) {
   return (
     <Select.Root value={value} onValueChange={onChange} disabled={disabled}>
       <Select.Trigger
-        className={`choice-trigger${compact ? " choice-compact" : ""}`}
+        className="choice-trigger"
         aria-label={label}
         type="button"
       >
