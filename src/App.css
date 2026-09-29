@@ -221,54 +221,30 @@
     box-shadow 0.15s,
     transform 0.15s;
 }
-.application-card-dragging,
-.application-card-dragging:hover {
-  box-shadow: 0 16px 34px #172b4d30;
-  transform: rotate(1deg);
-}
 .application-card:hover {
   box-shadow: 0 7px 18px #172b4d18;
   transform: translateY(-1px);
 }
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 16px 12px 0 16px;
+.application-card:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
 }
-.drag-handle {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  color: #748199;
+.application-card-dragging,
+.application-card-dragging:hover {
+  box-shadow: 0 16px 34px #172b4d30;
+}
+.application-card {
   cursor: grab;
-  touch-action: none;
+  padding: 16px;
 }
-.drag-handle:hover,
-.drag-handle:focus-visible {
-  background: var(--blue-soft);
-  color: var(--blue);
-}
-.drag-handle:active {
+.application-card:active {
   cursor: grabbing;
 }
-.drag-handle svg {
-  width: 17px;
-  height: 17px;
-}
-.card-open {
+.card-content {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
   gap: 5px;
-  width: 100%;
-  border: 0;
-  background: none;
-  text-align: left;
-  padding: 0 16px 16px;
-  color: inherit;
 }
 .company-icon {
   display: grid;
@@ -281,7 +257,7 @@
   font-weight: 800;
   margin-bottom: 8px;
 }
-.card-open strong {
+.card-content strong {
   font-size: 14px;
 }
 .role {
@@ -328,8 +304,7 @@
 .empty-banner button {
   margin-left: auto;
 }
-.banner,
-.notice {
+.banner {
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 18px;
@@ -341,17 +316,46 @@
   background: #f7e9ec;
   border: 1px solid #e7cbd1;
 }
-.notice {
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 30;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  background: var(--blue-soft);
-  color: var(--blue-dark);
+  gap: 20px;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: var(--ink);
+  color: white;
+  box-shadow: 0 12px 30px #172b4d36;
+  font-size: 13px;
+  font-weight: 600;
+  animation: toast-in 0.18s ease-out;
 }
-.notice button {
+.toast button {
   border: 0;
   background: none;
-  color: inherit;
+  color: white;
   font-size: 20px;
+  line-height: 1;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
 }
 .interview-list {
   display: grid;
@@ -870,4 +874,13 @@
 .date-popover,
 .date-popover .rdp-root {
   font-family: var(--font-ui);
+}
+
+@media (max-width: 550px) {
+  .toast {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    max-width: none;
+  }
 }
